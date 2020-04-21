@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/gkatai/chat-ui/issues"
   },
-  "homepage": "https://github.com/gkatai/chat-ui#readme"
+  "homepage": "https://github.com/gkatai/chat-ui#readme",
+  "devDependencies": {
+    "prettier": "^2.0.5"
+  }
 }
