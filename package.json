@@ -1,0 +1,19 @@
+{
+  "name": "chat-ui",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gkatai/chat-ui.git"
+  },
+  "author": "gkatai",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/gkatai/chat-ui/issues"
+  },
+  "homepage": "https://github.com/gkatai/chat-ui#readme"
+}
