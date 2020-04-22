@@ -7,17 +7,14 @@
     <title>chat-ui</title>
   </head>
   <body>
-    <div id="messages">
-      <p>Message - 1</p>
-      <p class="user-message">Message - 2</p>
-    </div>
-    <label>Name:</label>
-    <input id="name-input" type="text" />
-    <label>Message:</label>
-    <input id="message-input" type="text" />
-    <button id="send-button">Send</button>
+    <div id="app"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
+    <script>
+      const chatUi = {};
+    </script>
+    <script src="logic.js"></script>
+    <script src="renderer.js"></script>
     <script src="index.js"></script>
   </body>
 </html>

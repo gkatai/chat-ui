@@ -5,3 +5,7 @@
 .user-message {
   text-align: right;
 }
+
+.validation-info {
+  color: cadetblue;
+}
