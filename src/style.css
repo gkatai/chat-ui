@@ -1,0 +1,7 @@
+.messages {
+  display: grid;
+}
+
+.user-message {
+  text-align: right;
+}
