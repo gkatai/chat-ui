@@ -22,14 +22,25 @@ chatUi.logic = (function logic() {
 
         return { ...state, validationMessage: undefined, connected: true };
       }
-      case 'MESSAGE_RECEIVED': {
-        const isOwn = state.userName === action.user;
-        return { ...state, messages: [...state.messages, { user: action.user, message: action.message, isOwn }] };
-      }
       case 'MESSAGE_BOX_CHANGED':
         return { ...state, currentMessage: action.message };
       case 'NAME_BOX_CHANGED':
         return { ...state, userName: action.name };
+      case 'SEND_MESSAGE':
+        if (!state.connected) {
+          return state;
+        }
+
+        if (action.message.trim().length > 0) {
+          sideEffects.sendMessage(state.userName, action.message);
+          return { ...state, currentMessage: '', validationMessage: '' };
+        }
+
+        return { ...state, validationMessage: 'Enter a message!' };
+      case 'MESSAGE_RECEIVED': {
+        const isOwn = state.userName === action.user;
+        return { ...state, messages: [...state.messages, { user: action.user, message: action.message, isOwn }] };
+      }
       default:
         return state;
     }
