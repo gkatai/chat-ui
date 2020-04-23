@@ -7,8 +7,21 @@ chatUi.logic = (function logic() {
     validationMessage: 'Enter username to connect',
   };
 
-  function chatReducer(state = initialState, action) {
+  function chatReducer(state = initialState, action, sideEffects) {
     switch (action.type) {
+      case 'USER_NAME_ENTERED': {
+        if (state.userName.length < 3) {
+          return { ...state, validationMessage: 'Name must be at least 3 characters long!' };
+        }
+
+        if (!/^[a-zA-Z0-9_.-]*$/.test(state.userName)) {
+          return { ...state, validationMessage: 'Name can only contain letters, numbers, underscore or hypen!' };
+        }
+
+        sideEffects.connect();
+
+        return { ...state, validationMessage: undefined, connected: true };
+      }
       case 'MESSAGE_RECEIVED': {
         const isOwn = state.userName === action.user;
         return { ...state, messages: [...state.messages, { user: action.user, message: action.message, isOwn }] };
@@ -22,7 +35,7 @@ chatUi.logic = (function logic() {
     }
   }
 
-  function createStore(reducer) {
+  function createStore(reducer, sideEffects) {
     const listeners = [];
     let state = reducer(undefined, {});
 
@@ -31,7 +44,7 @@ chatUi.logic = (function logic() {
     }
 
     function dispatch(action) {
-      state = reducer(state, action);
+      state = reducer(state, action, sideEffects);
       listeners.forEach((listener) => listener());
     }
 

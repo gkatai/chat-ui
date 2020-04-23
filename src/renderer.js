@@ -1,9 +1,19 @@
 chatUi.renderer = (function () {
-  function view(state, store, root) {
+  function view(store, root) {
+    const state = store.getState();
+
     root.innerHTML = '';
     [
       ...state.messages.map((m) => renderMessage(m)),
-      renderInput('name-input', 'Name: ', state.userName, (e) => store.dispatch({ type: 'NAME_BOX_CHANGED', name: e.target.value })),
+      renderInput(
+        'name-input',
+        'Name: ',
+        state.userName,
+        (e) => store.dispatch({ type: 'NAME_BOX_CHANGED', name: e.target.value }),
+        () => store.dispatch({ type: 'USER_NAME_ENTERED' }),
+        keydownHandler,
+        state.connected
+      ),
       renderInput('message-input', 'Message: ', state.currentMessage, (e) =>
         store.dispatch({ type: 'MESSAGE_BOX_CHANGED', message: e.target.value })
       ),
@@ -12,7 +22,17 @@ chatUi.renderer = (function () {
     ].forEach((element) => root.appendChild(element));
   }
 
-  function renderInput(id, name, value, changeHandler) {
+  function keydownHandler(e) {
+    console.log('keydown');
+    if (e.which === 13) {
+      e.target.blur();
+      return false;
+    }
+
+    return true;
+  }
+
+  function renderInput(id, name, value, changeHandler, blurHandler, keydownHandler, disabled = false) {
     const container = document.createElement('span');
     const label = document.createElement('label');
     label.appendChild(document.createTextNode(name));
@@ -21,6 +41,9 @@ chatUi.renderer = (function () {
     input.id = id;
     input.value = value;
     input.onchange = changeHandler;
+    input.onblur = blurHandler;
+    input.onkeydown = keydownHandler;
+    input.disabled = disabled;
     container.appendChild(input);
 
     return container;
@@ -37,8 +60,11 @@ chatUi.renderer = (function () {
 
   function renderValidationMessage(text) {
     const p = document.createElement('p');
-    p.appendChild(document.createTextNode(text));
-    p.className = 'validation-info';
+
+    if (text) {
+      p.appendChild(document.createTextNode(text));
+      p.className = 'validation-info';
+    }
 
     return p;
   }
