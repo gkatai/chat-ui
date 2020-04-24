@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>QUnit Example</title>
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.9.2.css" />
+  </head>
+  <body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    <script src="https://code.jquery.com/qunit/qunit-2.9.2.js"></script>
+    <script>
+      const chatUi = {};
+    </script>
+    <script src="logic.js"></script>
+    <script>
+      QUnit.test('ChatReducer userName is too short', function (assert) {
+        const state = {
+          connected: false,
+          userName: 'na',
+          validationMessage: 'Error',
+        };
+        const expectedState = {
+          connected: false,
+          userName: 'na',
+          validationMessage: 'Name must be at least 3 characters long!',
+        };
+        assert.deepEqual(chatUi.logic.chatReducer(state, { type: 'USER_NAME_ENTERED' }), expectedState, 'Passed!');
+      });
+
+      QUnit.test('ChatReducer userName contains illegal characters', function (assert) {
+        const state = {
+          connected: false,
+          userName: 'name*',
+          validationMessage: 'Error',
+        };
+        const expectedState = {
+          connected: false,
+          userName: 'name*',
+          validationMessage: 'Name can only contain letters, numbers, underscore or hypen!',
+        };
+        assert.deepEqual(chatUi.logic.chatReducer(state, { type: 'USER_NAME_ENTERED' }), expectedState, 'Passed!');
+      });
+
+      QUnit.test('ChatReducer userName is correct', function (assert) {
+        const state = {
+          connected: false,
+          userName: 'name',
+          validationMessage: 'Error',
+        };
+        const expectedState = {
+          connected: true,
+          userName: 'name',
+          validationMessage: '',
+        };
+        assert.deepEqual(chatUi.logic.chatReducer(state, { type: 'USER_NAME_ENTERED' }), expectedState, 'Passed!');
+      });
+
+      QUnit.test('ChatReducer send empty message', function (assert) {
+        const state = {
+          connected: true,
+          userName: 'name',
+          currentMessage: '  ',
+        };
+        const expectedState = {
+          connected: true,
+          userName: 'name',
+          currentMessage: '  ',
+          validationMessage: 'Enter a message!',
+        };
+        assert.deepEqual(chatUi.logic.chatReducer(state, { type: 'SEND_MESSAGE' }), expectedState, 'Passed!');
+      });
+
+      QUnit.test('ChatReducer send valid message', function (assert) {
+        const state = {
+          connected: true,
+          userName: 'name',
+          currentMessage: 'valid message',
+        };
+        const expectedState = {
+          connected: true,
+          userName: 'name',
+          currentMessage: '',
+          validationMessage: '',
+        };
+        assert.deepEqual(chatUi.logic.chatReducer(state, { type: 'SEND_MESSAGE' }), expectedState, 'Passed!');
+      });
+
+      QUnit.test('ChatReducer message received from other user', function (assert) {
+        const state = {
+          userName: 'name',
+          messages: [],
+        };
+        const expectedState = {
+          userName: 'name',
+          messages: [{ user: 'otheruser', message: 'message', isOwn: false }],
+        };
+        assert.deepEqual(
+          chatUi.logic.chatReducer(state, { type: 'MESSAGE_RECEIVED', user: 'otheruser', message: 'message' }),
+          expectedState,
+          'Passed!'
+        );
+      });
+
+      QUnit.test('ChatReducer message received from user', function (assert) {
+        const state = {
+          userName: 'name',
+          messages: [],
+        };
+        const expectedState = {
+          userName: 'name',
+          messages: [{ user: 'name', message: 'message', isOwn: true }],
+        };
+        assert.deepEqual(
+          chatUi.logic.chatReducer(state, { type: 'MESSAGE_RECEIVED', user: 'name', message: 'message' }),
+          expectedState,
+          'Passed!'
+        );
+      });
+    </script>
+  </body>
+</html>

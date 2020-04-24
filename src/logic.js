@@ -41,9 +41,9 @@ chatUi.logic = (function logic() {
       return { ...state, validationMessage: 'Name can only contain letters, numbers, underscore or hypen!' };
     }
 
-    sideEffects.connect();
+    sideEffects && sideEffects.connect();
 
-    return { ...state, validationMessage: undefined, connected: true };
+    return { ...state, validationMessage: '', connected: true };
   }
 
   function sendMessage(state, sideEffects, message) {
@@ -52,7 +52,7 @@ chatUi.logic = (function logic() {
     }
 
     if (message.trim().length > 0) {
-      sideEffects.sendMessage(state.userName, message);
+      sideEffects && sideEffects.sendMessage(state.userName, message);
       return { ...state, currentMessage: '', validationMessage: '' };
     }
 
