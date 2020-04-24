@@ -1,4 +1,8 @@
 chatUi.renderer = (function () {
+  /**
+   * The main render function
+   * It redraws the whole ui on every call
+   */
   function view(store, root) {
     const state = store.getState();
 
@@ -15,6 +19,7 @@ chatUi.renderer = (function () {
     messageInput.focus();
   }
 
+  // helper for drawing the controls (inputs and send button)
   function renderControlls(state, store) {
     const container = document.createElement('div');
     container.classList.add('controlls');
@@ -40,66 +45,66 @@ chatUi.renderer = (function () {
     container.appendChild(renderValidationMessage(state.validationMessage));
 
     return container;
-  }
 
-  function keydownHandlerForName(e) {
-    if (e.which === 13) {
-      e.target.blur();
-      return false;
+    function keydownHandlerForName(e) {
+      if (e.which === 13) {
+        e.target.blur();
+        return false;
+      }
+
+      return true;
     }
 
-    return true;
-  }
+    function keydownHandlerForMessage(e, store) {
+      store.dispatch({ type: 'MESSAGE_BOX_CHANGED', doNotListen: true, message: e.target.value + e.key });
+      if (e.which === 13) {
+        store.dispatch({ type: 'SEND_MESSAGE_FROM_ENTER', message: e.target.value });
+      }
+    }
 
-  function keydownHandlerForMessage(e, store) {
-    store.dispatch({ type: 'MESSAGE_BOX_CHANGED', noRerenderNeeded: true, message: e.target.value + e.key });
-    if (e.which === 13) {
-      store.dispatch({ type: 'SEND_MESSAGE_FROM_ENTER', message: e.target.value });
+    // renders an input element
+    function renderInput(id, name, value, changeHandler, blurHandler, keydownHandler, disabled = false) {
+      const container = document.createElement('span');
+      const label = document.createElement('label');
+      label.appendChild(document.createTextNode(name));
+      container.appendChild(label);
+      const input = document.createElement('input');
+      input.id = id;
+      input.value = value;
+      input.onchange = changeHandler;
+      input.onkeydown = keydownHandler;
+      input.onblur = blurHandler;
+      input.disabled = disabled;
+
+      container.appendChild(input);
+
+      return container;
+    }
+
+    // renders a button element
+    function renderButton(id, name, clickHandler) {
+      const button = document.createElement('button');
+      button.id = id;
+      button.innerHTML = name;
+      button.onclick = clickHandler;
+
+      return button;
+    }
+
+    // renders a p element with the provided message
+    function renderValidationMessage(text) {
+      const p = document.createElement('p');
+
+      if (text) {
+        p.appendChild(document.createTextNode(text));
+        p.className = 'validation-info';
+      }
+
+      return p;
     }
   }
 
-  function renderInput(id, name, value, changeHandler, blurHandler, keydownHandler, disabled = false, clear = false) {
-    const container = document.createElement('span');
-    const label = document.createElement('label');
-    label.appendChild(document.createTextNode(name));
-    container.appendChild(label);
-    const input = document.createElement('input');
-    input.id = id;
-    input.value = value;
-    input.onchange = changeHandler;
-    input.onkeydown = keydownHandler;
-    input.onblur = blurHandler;
-    input.disabled = disabled;
-
-    if (clear) {
-      input.value = '';
-    }
-
-    container.appendChild(input);
-
-    return container;
-  }
-
-  function renderButton(id, name, clickHandler) {
-    const button = document.createElement('button');
-    button.id = id;
-    button.innerHTML = name;
-    button.onclick = clickHandler;
-
-    return button;
-  }
-
-  function renderValidationMessage(text) {
-    const p = document.createElement('p');
-
-    if (text) {
-      p.appendChild(document.createTextNode(text));
-      p.className = 'validation-info';
-    }
-
-    return p;
-  }
-
+  // Helper for drawing the message div element
   function renderMessages(messages) {
     const container = document.createElement('div');
     container.classList = 'messages';

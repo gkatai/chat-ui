@@ -1,4 +1,5 @@
 chatUi.logic = (function logic() {
+  // the starting state
   let initialState = {
     connected: false,
     messages: [],
@@ -7,6 +8,7 @@ chatUi.logic = (function logic() {
     validationMessage: 'Enter username to connect',
   };
 
+  // reducer for chat related logic
   function chatReducer(state = initialState, action, sideEffects) {
     switch (action.type) {
       case 'USER_NAME_ENTERED':
@@ -28,6 +30,7 @@ chatUi.logic = (function logic() {
     }
   }
 
+  // helper for the user name entered event
   function userNameEntered(state, sideEffects) {
     if (state.connected) {
       return state;
@@ -46,6 +49,7 @@ chatUi.logic = (function logic() {
     return { ...state, validationMessage: '', connected: true };
   }
 
+  // helper for the send message event
   function sendMessage(state, sideEffects, message) {
     if (!state.connected) {
       return { ...state, currentMessage: '' };
@@ -59,35 +63,7 @@ chatUi.logic = (function logic() {
     return { ...state, validationMessage: 'Enter a message!' };
   }
 
-  function createStore(reducer, sideEffects) {
-    const listeners = [];
-    let state = reducer(undefined, {});
-
-    function getState() {
-      return state;
-    }
-
-    function dispatch(action) {
-      state = reducer(state, action, sideEffects);
-
-      if (!action.noRerenderNeeded) {
-        listeners.forEach((listener) => listener());
-      }
-    }
-
-    function subscribe(listener) {
-      listeners.push(listener);
-    }
-
-    return {
-      getState,
-      dispatch,
-      subscribe,
-    };
-  }
-
   return {
     chatReducer,
-    createStore,
   };
 })();
