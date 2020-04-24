@@ -1,11 +1,24 @@
-.messages {
-  display: grid;
-}
-
-.user-message {
-  text-align: right;
-}
-
 .validation-info {
   color: cadetblue;
+}
+
+.messages {
+  width: 500px;
+  height: 600px;
+  border: solid;
+  padding: 5px 30px;
+  overflow: auto;
+  font: 1.2em 'Fira Sans', sans-serif;
+}
+
+.message {
+  border-bottom: solid 1px;
+  margin-right: 100px;
+  margin-bottom: 30px;
+}
+
+.message.user {
+  text-align: right;
+  margin-right: 0px;
+  margin-left: 100px;
 }

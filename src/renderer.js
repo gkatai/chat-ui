@@ -4,7 +4,7 @@ chatUi.renderer = (function () {
 
     root.innerHTML = '';
     [
-      ...state.messages.map((m) => renderMessage(m)),
+      renderMessages(state.messages),
       renderInput(
         'name-input',
         'Name: ',
@@ -14,19 +14,19 @@ chatUi.renderer = (function () {
         keydownHandlerForName,
         state.connected
       ),
-      renderInput(
-        'message-input',
-        'Message: ',
-        state.currentMessage,
-        (e) => store.dispatch({ type: 'MESSAGE_BOX_CHANGED', message: e.target.value }),
-        undefined,
-        (e) => keydownHandlerForMessage(e, store),
-        false,
-        true
-      ),
+      renderInput('message-input', 'Message: ', state.currentMessage, undefined, undefined, (e) => keydownHandlerForMessage(e, store)),
       renderButton('send-button', 'Send', () => store.dispatch({ type: 'SEND_MESSAGE', message: state.currentMessage })),
       renderValidationMessage(state.validationMessage),
     ].forEach((element) => root.appendChild(element));
+
+    const messagesContainer = document.getElementsByClassName('messages');
+
+    if (messagesContainer && messagesContainer[0]) {
+      messagesContainer[0].scrollTo(0, messagesContainer[0].scrollHeight);
+    }
+
+    const messageInput = document.getElementById('message-input');
+    messageInput.focus();
   }
 
   function keydownHandlerForName(e) {
@@ -39,15 +39,13 @@ chatUi.renderer = (function () {
   }
 
   function keydownHandlerForMessage(e, store) {
+    store.dispatch({ type: 'MESSAGE_BOX_CHANGED', noRerenderNeeded: true, message: e.target.value + e.key });
     if (e.which === 13) {
-      store.dispatch({ type: 'SEND_MESSAGE', message: e.target.value });
-      e.preventDefault();
+      store.dispatch({ type: 'SEND_MESSAGE_FROM_ENTER', message: e.target.value });
     }
-
-    // return true;
   }
 
-  function renderInput(id, name, value, changeHandler, blurHandler, keydownHandler, disabled = false, focus = false) {
+  function renderInput(id, name, value, changeHandler, blurHandler, keydownHandler, disabled = false, clear = false) {
     const container = document.createElement('span');
     const label = document.createElement('label');
     label.appendChild(document.createTextNode(name));
@@ -60,9 +58,8 @@ chatUi.renderer = (function () {
     input.onblur = blurHandler;
     input.disabled = disabled;
 
-    if (focus) {
-      input.focus();
-      console.log('focus');
+    if (clear) {
+      input.value = '';
     }
 
     container.appendChild(input);
@@ -90,16 +87,24 @@ chatUi.renderer = (function () {
     return p;
   }
 
-  function renderMessage(message) {
-    const p = document.createElement('p');
+  function renderMessages(messages) {
+    const container = document.createElement('div');
+    container.classList = 'messages';
 
-    p.appendChild(document.createTextNode(`${message.user}: ${message.message}`));
+    messages.map((message) => {
+      const p = document.createElement('p');
 
-    if (message.isOwn) {
-      p.className = 'user-message';
-    }
+      p.appendChild(document.createTextNode(`${message.user}: ${message.message}`));
+      p.classList.add('message');
 
-    return p;
+      if (message.isOwn) {
+        p.classList.add('user');
+      }
+
+      container.appendChild(p);
+    });
+
+    return container;
   }
 
   return {
