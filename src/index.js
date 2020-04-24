@@ -1,4 +1,5 @@
 (function () {
+  let socket;
   const sideEffects = {
     connect: function () {
       socket = io('http://35.157.80.184:8080/');
@@ -16,6 +17,4 @@
   const rootElement = document.getElementById('app');
   chatUi.renderer.view(store, rootElement);
   store.subscribe(() => chatUi.renderer.view(store, rootElement));
-
-  let socket;
 })();

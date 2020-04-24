@@ -1,3 +1,15 @@
+body {
+  font: 1.2em 'Fira Sans', sans-serif;
+}
+
+.controlls {
+  margin-top: 15px;
+}
+
+.message-input {
+  margin-left: 20px;
+}
+
 .validation-info {
   color: cadetblue;
 }
@@ -8,7 +20,6 @@
   border: solid;
   padding: 5px 30px;
   overflow: auto;
-  font: 1.2em 'Fira Sans', sans-serif;
 }
 
 .message {
@@ -21,4 +32,8 @@
   text-align: right;
   margin-right: 0px;
   margin-left: 100px;
+}
+
+.send-button {
+  margin-left: 25px;
 }

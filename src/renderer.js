@@ -3,21 +3,7 @@ chatUi.renderer = (function () {
     const state = store.getState();
 
     root.innerHTML = '';
-    [
-      renderMessages(state.messages),
-      renderInput(
-        'name-input',
-        'Name: ',
-        state.userName,
-        (e) => store.dispatch({ type: 'NAME_BOX_CHANGED', name: e.target.value }),
-        () => store.dispatch({ type: 'USER_NAME_ENTERED' }),
-        keydownHandlerForName,
-        state.connected
-      ),
-      renderInput('message-input', 'Message: ', state.currentMessage, undefined, undefined, (e) => keydownHandlerForMessage(e, store)),
-      renderButton('send-button', 'Send', () => store.dispatch({ type: 'SEND_MESSAGE', message: state.currentMessage })),
-      renderValidationMessage(state.validationMessage),
-    ].forEach((element) => root.appendChild(element));
+    [renderMessages(state.messages), renderControlls(state, store)].forEach((element) => root.appendChild(element));
 
     const messagesContainer = document.getElementsByClassName('messages');
 
@@ -27,6 +13,33 @@ chatUi.renderer = (function () {
 
     const messageInput = document.getElementById('message-input');
     messageInput.focus();
+  }
+
+  function renderControlls(state, store) {
+    const container = document.createElement('div');
+    container.classList.add('controlls');
+    container.appendChild(
+      renderInput(
+        'name-input',
+        'Name: ',
+        state.userName,
+        (e) => store.dispatch({ type: 'NAME_BOX_CHANGED', name: e.target.value }),
+        () => store.dispatch({ type: 'USER_NAME_ENTERED' }),
+        keydownHandlerForName,
+        state.connected
+      )
+    );
+    const messageInput = renderInput('message-input', 'Message: ', state.currentMessage, undefined, undefined, (e) =>
+      keydownHandlerForMessage(e, store)
+    );
+    messageInput.classList.add('message-input');
+    container.appendChild(messageInput);
+    const sendButton = renderButton('send-button', 'Send', () => store.dispatch({ type: 'SEND_MESSAGE', message: state.currentMessage }));
+    sendButton.classList.add('send-button');
+    container.appendChild(sendButton);
+    container.appendChild(renderValidationMessage(state.validationMessage));
+
+    return container;
   }
 
   function keydownHandlerForName(e) {
